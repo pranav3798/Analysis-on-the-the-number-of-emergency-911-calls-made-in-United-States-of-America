@@ -1,0 +1,116 @@
+from __future__ import print_function
+
+from IPython.display import Image
+from IPython.display import display
+from IPython.display import HTML
+from sklearn import metrics
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.model_selection import train_test_split
+import math
+import sklearn
+import numpy as np
+import pandas as pd
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+%matplotlib inline
+import seaborn as sns
+sns.set()
+from sklearn.metrics import r2_score
+from sklearn import preprocessing
+a = pd.read_csv("911.csv")
+
+a = a[a['timeStamp'].str.contains('2016', na = False)] x = a.drop(["desc","addr","e"],axis=1) y = x.drop(["zip","twp"],axis=1)
+
+w = y.loc[((y['lat'] > 39.00) | (y['lat'] < 41.00)) & ((y['lng'] > -77.00) | (y['lng'] > -72.00))]
+
+titles_unique = pd.DataFrame(dt4.title.unique())
+
+titles_unique = titles_unique.sort_values([0],ascending = True)
+s = dt4.copy()
+s['category'],s['category2'] = s['title'].str.split(':',1).str
+s = s.drop(['title','category2'],axis = 1)
+cat_unique = pd.DataFrame(s.category.unique())
+cat_unique = cat_unique.sort_values([0],ascending = True)
+
+CATEGORIES = {'EMS':0,'Fire':1,'Traffic':2} s['category'].replace(CATEGORIES,inplace=True)
+ 
+hours_range = 3
+
+sd = s
+sd['datetime'] = pd.to_datetime(s['timeStamp'])
+sd['year'] = s['datetime'].dt.year
+sd['month'] = s['datetime'].dt.month
+sd['day'] = s['datetime'].dt.day
+sd['part_of_the_day'] = np.floor(s['datetime'].dt.hour/hours_range) sd['week'] = s['datetime'].dt.week
+
+sd['part_of_the_day'] = s.part_of_the_day.astype(int) sd['dayofweek'] = s['datetime'].dt.dayofweek epsilon = 0.0012
+lat_max = sd['lat'].max() + epsilon
+lat_min = sd['lat'].min()
+lat_range = lat_max - lat_min
+lng_max = sd['lng'].max() + epsilon
+lng_min = sd['lng'].min()
+lng_range = lng_max - lng_min
+lat_split = 5
+
+lng_split = 7
+
+lat_hop = lat_range/lat_split
+
+lng_hop = lng_range/lng_split
+
+sd['lat_grid'] = (np.floor(((sd['lat']-lat_min)/lat_hop)))
+
+sd['lng_grid'] = (np.floor(((sd['lng']-lng_min)/lng_hop)))
+sd.lat_grid = sd.lat_grid.astype(int)
+sd.lng_grid = sd.lng_grid.astype(int)
+v = sd.drop(['lat','lng'],axis = 1)
+final_columns =
+["month","week","dayofweek","day","part_of_the_day","lat_grid","lng_grid","
+
+category"]
+v = sd[final_columns]
+groupby_list =
+['month','week','dayofweek','day','part_of_the_day','lat_grid','lng_grid']
+dt_cat = dict()
+for item in CATEGORIES:
+
+dt_temp = v.loc[(v['category'] == CATEGORIES[item])] dt_cat[item] =
+dt_temp.groupby(groupby_list).size().reset_index(name='count')
+
+dt_cat['ALL'] = v.groupby(groupby_list).size().reset_index(name='count')
+
+def run_regression(name,input_dt):
+ 
+X = input_dt.iloc[:,[0,1,2,3,4,5,6]]
+
+Y = input_dt.iloc[:,[7]]
+Y = Y.values.reshape(len(X))
+validation_size = 0.20
+seed = 7
+
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size = validation_size,random_state = seed)
+model = GradientBoostingRegressor(n_estimators=200,
+learning_rate=0.2, max_depth=5, random_state=0,
+loss='ls', warm_start = True)
+model.fit(X_train,Y_train)
+return name,model,r2_score(Y_test, model.predict(X_test))
+results_table = [["CATEGORY","R2 SCORE"]]
+trained_models = dict()
+for item in dt_cat:
+
+results = run_regression(item,dt_cat[item]) results_table.append([item,results[2]]) trained_models[item] = results[1]
+
+print (results_table)
+
+singleday_dt = []
+row_base = [2,20,3,18] #month,week,dayofweek,day for day_idx in range(24//hours_range):
+for idx,row in dt_geogrid.iterrows():
+singleday_dt.append(row_base+[day_idx,row['lat_grid'],row['lng_grid']])
+singleday_dt = pd.DataFrame(singleday_dt,columns=final_columns[:7]) predictions_all = trained_models['ALL'].predict(singleday_dt) singleday_dt_full = singleday_dt
+singleday_dt_full['events'] = predictions_all
+
+data_timeevents = singleday_dt_full.groupby(['part_of_the_day']).agg({'events':
+
+np.sum}).reset_index()
+print(data_timeevents)
