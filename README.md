@@ -13,3 +13,10 @@ i. Dataset Used
 
 We have used a dataset that contains the information of the number of 911 calls made in the duration of 3 years between 2015- 2018.The dataset consists of the details of the different kinds of helpline calls made by the citizens regarding any traffic, emergency services for health related issues and fire calls.This dataset does contain some missing values like the zip section latitude section. So we have preprocessed the dataset using the script that either ignores the record or finds the zip code of any missing record by its latitude and longitude.We have added the category column of the type incident occurred according to its type in the pre-processed dataset.
  
+Prediction Model used - Gradient Boosting Regressor
+
+Gradient boosting is a machine learning regression and classification problems which produces a prediction model in the form of weak prediction models. In our dataset, it is quite difficult and tough to predict the exact location and the exact type of incident to happen as they depend on climatic, psychological and political factors which makes the above prediction technique the best possible prediction model for the issue.
+
+Visualisation of the prediction
+
+This Visualisation shows the prediction of the number of events made of a specific date(20-05-2016). The blue line indicates the predicts the calls that will be made on that date. And the orange dataset shows the number of calls made on that day in the trained dataset.
